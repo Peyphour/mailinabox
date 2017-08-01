@@ -1,0 +1,72 @@
+<h2>Generate junk email</h2>
+
+<div class="row">
+  <div class="col-sm-3">
+    <button onclick="do_add_junk_user()">Add junk user</button>
+    <button onclick="do_remove_junk_user()">Remove created junk mail</button>
+    <span id="email"></span>
+  </div>
+  <div class="col-sm-9">
+    <iframe height="500" width="800" id="roundcube"></iframe>
+  </div>
+</div>
+
+<script>
+
+var email;
+var password;
+
+function generate_random_string() {
+  var pw = "";
+  var charset = "abcdefghijkmnopqrstuvwxyz23456789"; // confusable characters skipped
+  for (var i = 0; i < 8; i++)
+    pw += charset.charAt(Math.floor(Math.random() * charset.length));
+  return pw; // cancel click
+}
+
+function junk_success(r) {
+
+  $("#email").text("Send emails to : " + email);
+
+  $("#roundcube").attr('src', 'https://{{hostname}}/mail');
+
+  $("#roundcube").contents().find("input[name='_user']").val(email);
+  $("#roundcube").contents().find("input[name='_pass']").val(password);
+
+  $("#roundcube").contents().find("#rcmloginsubmit").click();
+}
+
+function do_add_junk_user() {
+  email = generate_random_string() + '@{{hostname}}';
+  password = generate_random_string();
+
+  api(
+    '/mail/users/add',
+    'POST',
+    {
+      email: email,
+      password: password
+    },
+    junk_success,
+    function(r) {
+      show_modal_error("Add junk account", r);
+    }
+  )
+}
+
+function do_remove_junk_user() {
+  api(
+    '/mail/users/remove',
+    'POST',
+    {
+      email: email
+    },
+    function(r) {
+      show_modal_error("Remove junk account", r);
+    },
+    function(r) {
+      show_modal_error("Remove junk account", r);
+    }
+  )
+}
+</script>

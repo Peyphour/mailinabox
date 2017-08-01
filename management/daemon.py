@@ -336,7 +336,7 @@ def ssl_get_status():
 
 	# What domains can we provision certificates for? What unexpected problems do we have?
 	provision, cant_provision = get_certificates_to_provision(env, show_extended_problems=False)
-	
+
 	# What's the current status of TLS certificates on all of the domain?
 	domains_status = get_web_domains_info(env)
 	domains_status = [{ "domain": d["domain"], "status": d["ssl_certificate"][0], "text": d["ssl_certificate"][1] } for d in domains_status ]
